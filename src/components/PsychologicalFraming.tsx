@@ -151,6 +151,43 @@ function PsychologicalFraming() {
       ]
     },
     {
+      id: 'positive-negative-framing',
+      title: 'Positive vs Negative Framing',
+      description: 'Harness the power of positive vs negative language',
+      accent: 'text-yellow-400',
+      icon: '⚖️',
+      fullDescription: 'Positive vs Negative Framing leverages the psychological impact of optimistic versus cautionary language. Positive framing ("This will be fun!") can encourage more creative and confident responses, while negative framing ("Don\'t make mistakes") may lead to overly cautious outputs. Research shows that encouraging language often triggers better reasoning and chain-of-thought processes in AI models.',
+      whenToUse: 'Use positive framing when you want creative, confident responses or need to encourage complex reasoning. Use negative framing sparingly, only when caution is truly needed, as guiding what TO do is generally more effective than what NOT to do.',
+      strengths: ['Influences AI confidence level', 'Triggers better reasoning processes', 'Encourages creative thinking', 'Can reduce rushed responses'],
+      limitations: ['Effects may vary by model', 'Negative framing can be counterproductive', 'Requires careful balance', 'Context-dependent effectiveness'],
+      examples: [
+        {
+          scenario: 'Complex problem solving',
+          neutral: 'Solve this math problem: If a train travels 60 mph for 2 hours, how far does it go?',
+          framed: 'Take a moment and think carefully – we can solve this together! This is a fun problem: If a train travels 60 mph for 2 hours, how far does it go? Walk through your reasoning step by step.',
+          impact: 'The positive encouragement reduces rush to answer and triggers more thoughtful, step-by-step reasoning. The "we can solve this" builds confidence and collaborative framing.'
+        },
+        {
+          scenario: 'Creative writing task',
+          neutral: 'Write a story about space exploration.',
+          framed: 'Let your imagination soar! Write an exciting story about space exploration – think of it like being a movie director creating an epic adventure. What amazing discoveries and challenges will your characters encounter?',
+          impact: 'Positive framing with metaphor (movie director) encourages more creative and vivid storytelling by framing the task as exciting rather than just work.'
+        },
+        {
+          scenario: 'Technical explanation with analogies',
+          neutral: 'Explain how computer memory works.',
+          framed: 'Great question! Let\'s explore computer memory using a library analogy – think of RAM as your desk where you keep books you\'re currently reading, and storage as the library shelves where all books are kept. This will make it crystal clear!',
+          impact: 'Positive enthusiasm ("Great question!") combined with a concrete analogy makes complex concepts more accessible and engaging. The "crystal clear" promise builds confidence.'
+        }
+      ],
+      tips: [
+        'Use encouraging words like "Let\'s", "We can", "This will be"',
+        'Frame challenges as opportunities or fun puzzles',
+        'Incorporate metaphors and analogies for clarity',
+        'Avoid negative commands ("Don\'t make mistakes")'
+      ]
+    },
+    {
       id: 'anchoring-framing',
       title: 'Anchoring & Contextual Framing',
       description: 'Set context that influences interpretation',
@@ -378,6 +415,123 @@ HONEST ASSESSMENT:
 Blockchain has legitimate uses in supply chain tracking and certain financial applications. However, many "blockchain solutions" are solving problems that don't actually exist or could be solved more efficiently with traditional databases.
 
 The technology is interesting, but the hype often outpaces the practical reality. Approach with cautious optimism.`
+        }
+      ]
+    },
+    {
+      id: 'positive-negative-demo',
+      scenario: 'Teaching a complex concept to a beginner',
+      basePrompt: 'Explain quantum computing to someone who has never heard of it before.',
+      tones: [
+        {
+          name: 'Positive',
+          modifier: 'Use positive, encouraging language that makes learning feel exciting and achievable.',
+          color: 'text-green-400',
+          expectedOutcome: 'Enthusiastic, confidence-building explanation',
+          response: `🌟 Welcome to the fascinating world of quantum computing! You're about to discover something absolutely amazing!
+
+Think of regular computers like incredibly fast light switches – they can only be ON (1) or OFF (0). But quantum computers? They're like magical light switches that can be ON, OFF, and both at the same time! Mind-blowing, right?
+
+Here's a fun analogy: Imagine you're in a massive library looking for a specific book. A regular computer would check each book one by one – very systematic but slow. A quantum computer is like having a ghost that can walk through all the shelves simultaneously and find your book instantly!
+
+This happens because of something called "superposition" (don't worry, it sounds scarier than it is!). It's like a coin that's spinning in the air – until it lands, it's both heads AND tails at the same time.
+
+The coolest part? Quantum computers could help us:
+✨ Discover new medicines faster
+✨ Solve climate change puzzles  
+✨ Create unbreakable security
+✨ Unlock mysteries of the universe
+
+You're living in the exact moment when this technology is being born. How exciting is that? You're witnessing the future unfold! 🚀`
+        },
+        {
+          name: 'Negative',
+          modifier: 'Use cautionary language focusing on what not to misunderstand and potential confusion.',
+          color: 'text-red-400',
+          expectedOutcome: 'Cautious, potentially overwhelming explanation',
+          response: `Quantum computing is a complex subject that you shouldn't expect to understand immediately. Don't confuse it with regular computers – that's a common mistake.
+
+Unlike classical computers that use binary bits (don't think of them as simple switches, that's oversimplified), quantum computers use quantum bits or "qubits." Don't assume this is just a faster version of what we have – it's completely different physics.
+
+The principle of superposition isn't like anything in your everyday experience, so don't try to apply normal logic. It's not that a qubit is "both 1 and 0" – that's a misleading simplification that most people get wrong.
+
+You shouldn't expect quantum computers to replace your laptop. They won't run your web browser or word processor. Don't believe the hype about them solving every problem – they're only useful for specific types of calculations.
+
+Common misconceptions to avoid:
+❌ Don't think they're just faster regular computers
+❌ Don't assume they'll be available to consumers soon  
+❌ Don't expect them to break all encryption overnight
+❌ Don't imagine they violate causality or enable time travel
+
+The mathematics involved quantum mechanics, linear algebra, and complex probability theory – subjects that typically require years of study. Don't underestimate the difficulty of truly grasping these concepts.
+
+Remember: even experts struggle with quantum mechanics, so don't feel bad if this doesn't make complete sense immediately.`
+        },
+        {
+          name: 'Balanced',
+          modifier: 'Use measured, informative language that acknowledges complexity while remaining accessible.',
+          color: 'text-blue-400',
+          expectedOutcome: 'Clear, realistic explanation without being discouraging',
+          response: `Quantum computing represents a fundamentally different approach to information processing than traditional computers.
+
+While classical computers process information using bits that are either 0 or 1, quantum computers use quantum bits (qubits) that can exist in a superposition of both states simultaneously. This property, along with others like entanglement, allows quantum computers to explore multiple solutions to a problem at once.
+
+To illustrate: imagine you're navigating a maze. A classical computer would try each path sequentially until finding the exit. A quantum computer could, in theory, explore all paths simultaneously and identify the solution more efficiently.
+
+Key principles:
+• Superposition: Qubits can be in multiple states at once
+• Entanglement: Qubits can be correlated in ways that seem impossible classically  
+• Interference: Quantum states can amplify correct answers and cancel wrong ones
+
+Practical applications are emerging in:
+• Cryptography and security
+• Drug discovery and molecular modeling
+• Optimization problems
+• Financial modeling
+
+Current limitations include:
+• Quantum states are extremely fragile
+• Specialized cooling requirements (near absolute zero)
+• High error rates requiring correction
+• Limited to specific types of problems
+
+While quantum computers won't replace classical computers for everyday tasks, they may provide significant advantages for certain specialized calculations. The field is rapidly advancing, with both promise and challenges ahead.`
+        },
+        {
+          name: 'Metaphor-Rich',
+          modifier: 'Use engaging analogies and metaphors to make complex concepts intuitive and memorable.',
+          color: 'text-purple-400',
+          expectedOutcome: 'Vivid, analogy-driven explanation that sticks in memory',
+          response: `🎭 Quantum Computing: The Magic Theater of Information
+
+Imagine information processing as a theater performance...
+
+**Classical Computing = Traditional Play**
+In a regular theater, actors (bits) can only be in one place at a time – either stage left (0) or stage right (1). The story unfolds step by step, scene by scene, very predictably.
+
+**Quantum Computing = Mystical Performance**
+Now imagine a magical theater where actors (qubits) can be in multiple places simultaneously! An actor can be stage left AND stage right until the spotlight hits them (measurement), forcing them to "choose" a position.
+
+**🌊 The Wave Pool Analogy**
+Think of a quantum computer like a vast pool of water:
+- Drop a stone (your problem) into the center
+- Waves spread out in all directions simultaneously (exploring all solutions)
+- When waves meet, they either amplify (correct answers get stronger) or cancel out (wrong answers disappear)
+- The final wave pattern reveals your solution
+
+**🗝️ The Master Key Maker**
+Classical computers are like trying every key in your keychain one by one. Quantum computers are like having a shape-shifting master key that tries all possible shapes at once until it finds the perfect fit.
+
+**🎲 Schrödinger's Calculator**
+Remember Schrödinger's cat that's both alive and dead? Quantum computers work with "Schrödinger's calculations" – they're simultaneously working on all possible answers until you peek at the result!
+
+This "quantum magic" could help us:
+🧬 Design molecules like playing with cosmic Legos
+🔐 Create uncrackable codes  
+🌍 Solve climate puzzles
+🚀 Navigate space with perfect precision
+
+You're witnessing the birth of computers that think more like the universe itself! 🌌`
         }
       ]
     }

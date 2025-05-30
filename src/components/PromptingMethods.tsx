@@ -24,6 +24,13 @@ interface MethodData {
   limitations: string[];
 }
 
+interface AnalysisResult {
+  strengths: string[];
+  improvements: string[];
+  effectiveness: Record<string, string>;
+  recommendation: string;
+}
+
 function PromptingMethods() {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [selectedExample, setSelectedExample] = useState<number>(0);
@@ -443,6 +450,484 @@ function PromptingMethods() {
     }
   };
 
+  const generateMethodSpecificAnalysis = (methodId: string, exampleTitle: string): AnalysisResult => {
+    const analysisMap: { [key: string]: { [key: string]: AnalysisResult } } = {
+      'zero-shot': {
+        'Email Priority Classification': {
+          strengths: [
+            'Direct task instruction with clear output format',
+            'Specific priority categories (HIGH/MEDIUM/LOW)',
+            'Business context provided for decision-making',
+            'Single-step classification approach'
+          ],
+          improvements: [
+            'Could define explicit criteria for each priority level',
+            'Consider adding urgency vs importance matrix',
+            'Specify escalation procedures for HIGH priority',
+            'Include time-based response expectations'
+          ],
+          effectiveness: {
+            'Task clarity': 'Excellent',
+            'Output format': 'Strong',
+            'Context sufficiency': 'Good',
+            'Zero-shot optimization': '90%'
+          },
+          recommendation: 'Add priority criteria: "HIGH: System down/revenue impact >$1K/hr, MEDIUM: Feature issues affecting multiple users, LOW: General questions/feature requests"'
+        },
+        'Meeting Notes Extraction': {
+          strengths: [
+            'Structured JSON output format specified',
+            'Clear field definitions provided',
+            'Concrete business context included',
+            'Separates instruction from content clearly'
+          ],
+          improvements: [
+            'Add validation rules for each field',
+            'Specify handling of missing information',
+            'Include priority scoring methodology',
+            'Define date format requirements'
+          ],
+          effectiveness: {
+            'Structure clarity': 'Excellent',
+            'Field specification': 'Strong',
+            'Integration readiness': 'High',
+            'Zero-shot optimization': '88%'
+          },
+          recommendation: 'Add field validation: "If deadline not specified, use null. Priority: critical/high/medium/low based on urgency indicators."'
+        },
+        'Social Media Content Moderation': {
+          strengths: [
+            'Clear decision categories defined',
+            'Requires reasoning for transparency',
+            'Specific policy violation focus',
+            'Actionable output format'
+          ],
+          improvements: [
+            'Reference specific community guidelines',
+            'Add confidence scoring for decisions',
+            'Include appeal process mention',
+            'Specify edge case handling'
+          ],
+          effectiveness: {
+            'Decision clarity': 'Strong',
+            'Transparency': 'Good',
+            'Policy alignment': 'Good',
+            'Zero-shot optimization': '82%'
+          },
+          recommendation: 'Add guidelines reference: "Review against Community Guidelines sections 2.1 (spam), 2.3 (medical claims), 3.1 (deceptive practices)"'
+        }
+      },
+      'few-shot': {
+        'E-commerce Product Descriptions': {
+          strengths: [
+            'Clear pattern establishment with examples',
+            'Consistent format across demonstrations',
+            'Shows benefit-focused language style',
+            'Target audience inclusion demonstrated'
+          ],
+          improvements: [
+            'Add more diverse product categories',
+            'Include examples with technical specifications',
+            'Show different tone variations',
+            'Add word count guidance'
+          ],
+          effectiveness: {
+            'Pattern recognition': 'Strong',
+            'Output consistency': 'Good',
+            'Style demonstration': 'Good',
+            'Few-shot optimization': '85%'
+          },
+          recommendation: 'Add technical example: "Gaming headset with noise cancellation" → "Premium wireless gaming headset featuring active noise cancellation, 50mm drivers, and 20-hour battery life"'
+        },
+        'Customer Service Responses': {
+          strengths: [
+            'Demonstrates empathy and professionalism',
+            'Shows immediate action steps',
+            'Consistent response structure',
+            'Covers different complaint types'
+          ],
+          improvements: [
+            'Add examples with escalation scenarios',
+            'Include multi-step resolution processes',
+            'Show cultural sensitivity variations',
+            'Add follow-up communication examples'
+          ],
+          effectiveness: {
+            'Empathy demonstration': 'Excellent',
+            'Action orientation': 'Strong',
+            'Consistency': 'Good',
+            'Few-shot optimization': '92%'
+          },
+          recommendation: 'Add escalation example: "I understand this has been incredibly frustrating. Let me connect you with my supervisor [Name] who can authorize additional compensation..."'
+        },
+        'API Documentation Generation': {
+          strengths: [
+            'Consistent documentation structure',
+            'Clear parameter specifications',
+            'Practical examples included',
+            'Business purpose explanation'
+          ],
+          improvements: [
+            'Add error handling examples',
+            'Include performance considerations',
+            'Show authentication requirements',
+            'Add versioning information'
+          ],
+          effectiveness: {
+            'Structure consistency': 'Excellent',
+            'Technical completeness': 'Good',
+            'Usability': 'Strong',
+            'Few-shot optimization': '87%'
+          },
+          recommendation: 'Add error handling: "**Errors**: Returns 400 if weight < 0, 404 if invalid distance, 422 if priority not in allowed values"'
+        }
+      },
+      'chain-of-thought': {
+        'SaaS Pricing Strategy': {
+          strengths: [
+            'Systematic step-by-step framework',
+            'Market context and competitor data',
+            'Clear analytical progression',
+            'Business-focused decision structure'
+          ],
+          improvements: [
+            'Add customer interview insights step',
+            'Include A/B testing methodology',
+            'Specify financial modeling approach',
+            'Add sensitivity analysis step'
+          ],
+          effectiveness: {
+            'Reasoning structure': 'Excellent',
+            'Market analysis': 'Strong',
+            'Decision framework': 'Good',
+            'CoT optimization': '89%'
+          },
+          recommendation: 'Add validation step: "Step 6: Validate pricing through customer interviews and willingness-to-pay surveys before final recommendation"'
+        },
+        'Software Bug Diagnosis': {
+          strengths: [
+            'Systematic debugging methodology',
+            'Covers multiple system components',
+            'Includes timeline and metrics',
+            'Production-focused approach'
+          ],
+          improvements: [
+            'Add log analysis procedures',
+            'Include rollback decision criteria',
+            'Specify monitoring setup steps',
+            'Add post-mortem planning'
+          ],
+          effectiveness: {
+            'Systematic approach': 'Excellent',
+            'Component coverage': 'Strong',
+            'Troubleshooting logic': 'Good',
+            'CoT optimization': '91%'
+          },
+          recommendation: 'Add log analysis: "Step 2.5: Analyze application logs for error patterns, database slow query logs, and system resource alerts"'
+        },
+        'Investment Decision Analysis': {
+          strengths: [
+            'Comprehensive investment framework',
+            'Financial metrics integration',
+            'Risk assessment inclusion',
+            'Multi-dimensional analysis'
+          ],
+          improvements: [
+            'Add due diligence checklist',
+            'Include scenario modeling',
+            'Specify exit strategy analysis',
+            'Add competitive benchmark step'
+          ],
+          effectiveness: {
+            'Framework completeness': 'Excellent',
+            'Financial rigor': 'Strong',
+            'Risk consideration': 'Good',
+            'CoT optimization': '88%'
+          },
+          recommendation: 'Add scenario analysis: "Step 4.5: Model best/worst/realistic scenarios with sensitivity analysis on key assumptions"'
+        }
+      },
+      'self-consistency': {
+        'Market Size Estimation': {
+          strengths: [
+            'Multiple estimation approaches',
+            'Cross-validation methodology',
+            'Assumption transparency',
+            'Consensus-building process'
+          ],
+          improvements: [
+            'Add confidence intervals',
+            'Include data source validation',
+            'Specify assumption testing',
+            'Add estimation accuracy metrics'
+          ],
+          effectiveness: {
+            'Multi-path validation': 'Excellent',
+            'Methodological rigor': 'Strong',
+            'Consensus building': 'Good',
+            'Self-consistency optimization': '93%'
+          },
+          recommendation: 'Add confidence scoring: "For each approach, provide confidence level (1-10) based on data quality and assumption strength"'
+        },
+        'Candidate Evaluation': {
+          strengths: [
+            'Multiple assessment frameworks',
+            'Objective scoring system',
+            'Comprehensive evaluation dimensions',
+            'Bias reduction through multiple perspectives'
+          ],
+          improvements: [
+            'Add interview panel diversity',
+            'Include reference check framework',
+            'Specify cultural fit metrics',
+            'Add probation period criteria'
+          ],
+          effectiveness: {
+            'Assessment comprehensiveness': 'Excellent',
+            'Bias reduction': 'Strong',
+            'Decision objectivity': 'Good',
+            'Self-consistency optimization': '90%'
+          },
+          recommendation: 'Add weighted scoring: "Weight frameworks: Technical (40%), Cultural fit (35%), Business impact (25%) for final consensus score"'
+        },
+        'Product Feature Prioritization': {
+          strengths: [
+            'Multiple prioritization methods',
+            'Balanced business considerations',
+            'Quantitative scoring approach',
+            'Stakeholder perspective integration'
+          ],
+          improvements: [
+            'Add customer impact weighting',
+            'Include technical debt considerations',
+            'Specify resource allocation logic',
+            'Add timeline dependency analysis'
+          ],
+          effectiveness: {
+            'Method diversity': 'Excellent',
+            'Business alignment': 'Strong',
+            'Decision objectivity': 'Good',
+            'Self-consistency optimization': '87%'
+          },
+          recommendation: 'Add customer weighting: "Weight customer feedback by revenue impact: Enterprise customers 3x, SMB customers 2x, free users 1x"'
+        }
+      },
+      'meta-prompting': {
+        'Customer Support Prompt Optimization': {
+          strengths: [
+            'Data-driven improvement approach',
+            'Specific performance metrics',
+            'User feedback integration',
+            'Targeted optimization goals'
+          ],
+          improvements: [
+            'Add A/B testing framework',
+            'Include conversation flow analysis',
+            'Specify training data requirements',
+            'Add performance monitoring setup'
+          ],
+          effectiveness: {
+            'Data utilization': 'Excellent',
+            'Optimization focus': 'Strong',
+            'Feedback integration': 'Good',
+            'Meta-prompting optimization': '91%'
+          },
+          recommendation: 'Add continuous monitoring: "Set up automated tracking for satisfaction scores, response time, and escalation rates for ongoing optimization"'
+        },
+        'Marketing Content Prompt Refinement': {
+          strengths: [
+            'Engagement metrics focus',
+            'Pattern analysis from successful content',
+            'Clear performance benchmarks',
+            'Actionable improvement areas'
+          ],
+          improvements: [
+            'Add audience segmentation analysis',
+            'Include competitor benchmarking',
+            'Specify content calendar integration',
+            'Add viral coefficient tracking'
+          ],
+          effectiveness: {
+            'Metrics-driven approach': 'Excellent',
+            'Pattern recognition': 'Strong',
+            'Performance focus': 'Good',
+            'Meta-prompting optimization': '89%'
+          },
+          recommendation: 'Add audience targeting: "Analyze engagement by demographics and optimize prompts for highest-value audience segments"'
+        },
+        'Sales Email Prompt Enhancement': {
+          strengths: [
+            'A/B testing results integration',
+            'Response rate optimization',
+            'Element-specific improvements',
+            'Conversion-focused approach'
+          ],
+          improvements: [
+            'Add sales cycle stage optimization',
+            'Include industry-specific variations',
+            'Specify follow-up sequence logic',
+            'Add CRM integration requirements'
+          ],
+          effectiveness: {
+            'Testing rigor': 'Excellent',
+            'Conversion optimization': 'Strong',
+            'Data-driven decisions': 'Good',
+            'Meta-prompting optimization': '88%'
+          },
+          recommendation: 'Add segmentation: "Create prompt variations by industry, company size, and sales cycle stage for targeted optimization"'
+        }
+      },
+      'tree-of-thoughts': {
+        'Crisis Management Planning': {
+          strengths: [
+            'Systematic decision tree structure',
+            'Multiple scenario exploration',
+            'Stakeholder consideration',
+            'Risk assessment integration'
+          ],
+          improvements: [
+            'Add timeline-based decision points',
+            'Include resource allocation trees',
+            'Specify escalation pathways',
+            'Add recovery milestone tracking'
+          ],
+          effectiveness: {
+            'Strategic exploration': 'Excellent',
+            'Scenario coverage': 'Strong',
+            'Decision structure': 'Good',
+            'Tree-of-thoughts optimization': '92%'
+          },
+          recommendation: 'Add timing branches: "Create sub-trees for Hour 1, Day 1, Week 1 response strategies with different resource availability"'
+        },
+        'Product Launch Strategy': {
+          strengths: [
+            'Comprehensive go-to-market exploration',
+            'Multiple strategy evaluation',
+            'Revenue impact consideration',
+            'Market positioning analysis'
+          ],
+          improvements: [
+            'Add competitive response modeling',
+            'Include failure recovery plans',
+            'Specify success metrics trees',
+            'Add resource constraint scenarios'
+          ],
+          effectiveness: {
+            'Strategy comprehensiveness': 'Excellent',
+            'Market analysis': 'Strong',
+            'Path evaluation': 'Good',
+            'Tree-of-thoughts optimization': '90%'
+          },
+          recommendation: 'Add competitive branches: "Model competitor response scenarios for each launch strategy to develop counter-strategies"'
+        },
+        'System Architecture Design': {
+          strengths: [
+            'Technical decision tree structure',
+            'Scalability consideration',
+            'Trade-off evaluation',
+            'Implementation complexity assessment'
+          ],
+          improvements: [
+            'Add performance benchmarking branches',
+            'Include security consideration trees',
+            'Specify migration pathway analysis',
+            'Add cost optimization trees'
+          ],
+          effectiveness: {
+            'Technical thoroughness': 'Excellent',
+            'Trade-off analysis': 'Strong',
+            'Decision framework': 'Good',
+            'Tree-of-thoughts optimization': '87%'
+          },
+          recommendation: 'Add performance trees: "Create sub-trees for load testing scenarios, database optimization paths, and caching strategies"'
+        }
+      },
+      'react': {
+        'Competitive Market Analysis': {
+          strengths: [
+            'Clear thought-action-observation cycle',
+            'Multiple data source integration',
+            'Systematic research approach',
+            'Action-oriented intelligence gathering'
+          ],
+          improvements: [
+            'Add data validation steps',
+            'Include competitive intelligence tools',
+            'Specify information synthesis process',
+            'Add actionable insights extraction'
+          ],
+          effectiveness: {
+            'Research methodology': 'Excellent',
+            'Tool integration': 'Strong',
+            'Data collection': 'Good',
+            'ReAct optimization': '89%'
+          },
+          recommendation: 'Add validation actions: "Action: CrossVerify[competitor_data] across multiple sources before analysis synthesis"'
+        },
+        'Business Financial Planning': {
+          strengths: [
+            'Market data integration',
+            'Calculation verification steps',
+            'Scenario modeling approach',
+            'Benchmark validation process'
+          ],
+          improvements: [
+            'Add sensitivity analysis actions',
+            'Include stress testing scenarios',
+            'Specify assumption documentation',
+            'Add investor presentation preparation'
+          ],
+          effectiveness: {
+            'Data-driven modeling': 'Excellent',
+            'Validation rigor': 'Strong',
+            'Scenario planning': 'Good',
+            'ReAct optimization': '91%'
+          },
+          recommendation: 'Add stress testing: "Action: StressTest[revenue_projections] with economic downturn scenarios (-20%, -40% market impact)"'
+        },
+        'Customer Discovery Research': {
+          strengths: [
+            'Multi-methodology approach',
+            'Primary and secondary research',
+            'Customer segmentation focus',
+            'Actionable insight generation'
+          ],
+          improvements: [
+            'Add longitudinal study design',
+            'Include competitive analysis integration',
+            'Specify sample size calculations',
+            'Add statistical significance testing'
+          ],
+          effectiveness: {
+            'Research comprehensiveness': 'Excellent',
+            'Methodology rigor': 'Strong',
+            'Insight quality': 'Good',
+            'ReAct optimization': '88%'
+          },
+          recommendation: 'Add longitudinal tracking: "Action: SetupCohortTracking[customer_segments] for behavior pattern analysis over 6-month periods"'
+        }
+      }
+    };
+
+    const methodAnalysis = analysisMap[methodId];
+    if (!methodAnalysis) {
+      return {
+        strengths: ['Method-specific analysis not available'],
+        improvements: ['Please select a specific example to see detailed analysis'],
+        effectiveness: { 'Analysis': 'Not Available' },
+        recommendation: 'Select an example from the available scenarios to see tailored analysis.'
+      };
+    }
+
+    const exampleAnalysis = methodAnalysis[exampleTitle];
+    if (!exampleAnalysis) {
+      const defaultAnalysis = Object.values(methodAnalysis)[0] as AnalysisResult;
+      return defaultAnalysis;
+    }
+
+    return exampleAnalysis;
+  };
+
   const selectedMethodData = promptingMethods.find(m => m.id === selectedMethod);
   const currentExample = selectedMethodData?.examples[selectedExample];
 
@@ -805,12 +1290,138 @@ function PromptingMethods() {
                         </div>
                         
                         <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-                          <h4 className="text-blue-400 font-mono text-sm mb-2">analysis:</h4>
-                          <p className="text-blue-200 text-xs font-mono">
-                            // This would show AI-powered analysis of your prompt's strengths and weaknesses
-                            // compared to the {selectedMethodData?.title} best practices.
-                            // In a real implementation, this would use an LLM to evaluate your prompt!
-                          </p>
+                          <h4 className="text-blue-400 font-mono text-sm mb-2">comparative_analysis:</h4>
+                          <div className="text-blue-200 text-xs font-mono space-y-4">
+                            {(() => {
+                              const analysis = generateMethodSpecificAnalysis(
+                                selectedMethod || '',
+                                currentExample?.title || ''
+                              );
+                              
+                              const isGoodPrompt = userPrompt.trim() === currentExample?.goodPrompt.trim();
+                              const isBadPrompt = userPrompt.trim() === currentExample?.badPrompt.trim();
+                              
+                              return (
+                                <>
+                                  {/* Prompt Classification */}
+                                  <div className="mb-4 p-3 bg-gray-800/50 border border-gray-700/30 rounded">
+                                    <span className="text-cyan-400">🔍 PROMPT CLASSIFICATION:</span>
+                                    <div className="mt-1">
+                                      {isGoodPrompt ? (
+                                        <span className="text-green-400">✅ This matches the GOOD prompt example</span>
+                                      ) : isBadPrompt ? (
+                                        <span className="text-red-400">❌ This matches the BAD prompt example</span>
+                                      ) : (
+                                        <span className="text-yellow-400">🔶 Custom prompt - analyzing against best practices</span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Bad vs Good Comparison */}
+                                  {(isGoodPrompt || isBadPrompt) && (
+                                    <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                      {/* Bad Prompt Analysis */}
+                                      <div className="bg-red-900/20 border border-red-500/30 rounded p-3">
+                                        <div className="text-red-400 font-semibold mb-2">❌ BAD PROMPT ISSUES:</div>
+                                        <div className="space-y-1 text-xs">
+                                          {currentExample?.badPrompt === "Is this email important?" && (
+                                            <>
+                                              <div>• Vague and subjective criteria</div>
+                                              <div>• No output format specified</div>
+                                              <div>• Missing business context</div>
+                                              <div>• No classification categories</div>
+                                            </>
+                                          )}
+                                          {currentExample?.badPrompt.includes("Write product descriptions like these examples") && (
+                                            <>
+                                              <div>• Examples are too brief and uninspiring</div>
+                                              <div>• No consistent format shown</div>
+                                              <div>• Missing target audience context</div>
+                                              <div>• No style or tone guidance</div>
+                                            </>
+                                          )}
+                                          {currentExample?.badPrompt === "What should we price our project management software at?" && (
+                                            <>
+                                              <div>• No structured analysis framework</div>
+                                              <div>• Missing market context and data</div>
+                                              <div>• No step-by-step reasoning requested</div>
+                                              <div>• Lacks competitive analysis component</div>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {/* Good Prompt Analysis */}
+                                      <div className="bg-green-900/20 border border-green-500/30 rounded p-3">
+                                        <div className="text-green-400 font-semibold mb-2">✅ GOOD PROMPT STRENGTHS:</div>
+                                        <div className="space-y-1 text-xs">
+                                          {analysis.strengths.slice(0, 4).map((strength: string, index: number) => (
+                                            <div key={index}>• {strength}</div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Main Analysis */}
+                                  <div className="mb-3">
+                                    <span className="text-green-400">✓ PROMPT STRENGTHS:</span>
+                                    <div className="ml-4 mt-1 space-y-1">
+                                      {analysis.strengths.map((strength: string, index: number) => (
+                                        <div key={index}>• {strength}</div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mb-3">
+                                    <span className="text-orange-400">⚠ IMPROVEMENTS NEEDED:</span>
+                                    <div className="ml-4 mt-1 space-y-1">
+                                      {analysis.improvements.map((improvement: string, index: number) => (
+                                        <div key={index}>• {improvement}</div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mb-3">
+                                    <span className="text-purple-400">📊 EFFECTIVENESS METRICS:</span>
+                                    <div className="ml-4 mt-1 space-y-1">
+                                      {Object.entries(analysis.effectiveness).map(([metric, value], index) => (
+                                        <div key={index}>
+                                          • {metric}: <span className={
+                                            value === 'Excellent' ? 'text-green-400' :
+                                            value === 'Strong' ? 'text-green-400' :
+                                            value === 'Good' ? 'text-yellow-400' :
+                                            value === 'High' ? 'text-green-400' :
+                                            'text-gray-400'
+                                          }>{value}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Key Transformation Insights */}
+                                  {(isGoodPrompt || isBadPrompt) && (
+                                    <div className="mb-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded">
+                                      <span className="text-purple-400">🔄 TRANSFORMATION INSIGHTS:</span>
+                                      <div className="ml-4 mt-2 space-y-1 text-xs">
+                                        <div>• <span className="text-cyan-400">Specificity:</span> Good prompts define exact requirements vs vague requests</div>
+                                        <div>• <span className="text-cyan-400">Structure:</span> Clear format guidance produces consistent outputs</div>
+                                        <div>• <span className="text-cyan-400">Context:</span> Business/domain context improves relevance</div>
+                                        <div>• <span className="text-cyan-400">Method:</span> {selectedMethodData?.title} techniques enhance reasoning quality</div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="bg-gray-800/50 border border-gray-700/30 rounded p-2 mt-3">
+                                    <span className="text-cyan-400">💡 RECOMMENDATION:</span>
+                                    <div className="mt-1">
+                                      <span className="text-gray-300">{analysis.recommendation}</span>
+                                    </div>
+                                  </div>
+                                </>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </div>
                     </div>
