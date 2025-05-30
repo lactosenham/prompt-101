@@ -1,0 +1,22 @@
+[build]
+  # Directory to change to before starting a build
+  base = "."
+  # Directory that contains the deploy-ready HTML files and assets
+  publish = "dist"
+  # Default build command
+  command = "npm run build"
+
+[build.environment]
+  # Specify Node.js version
+  NODE_VERSION = "18"
+
+[[redirects]]
+  # Handle client-side routing - redirect all routes to index.html
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  # Local development settings (optional)
+  command = "npm run dev"
+  port = 5173 
